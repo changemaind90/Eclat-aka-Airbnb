@@ -19,7 +19,7 @@
 
 1. 🛠 **Клонирование репозитория**  
    ```bash
-   git clone https://github.com/ваш-репозиторий/eclat.git
+   git clone [https://github.com/your-repo/eclat.git](https://github.com/changemaind90/Eclat-aka-Airbnb.git)
    cd eclat
 2. ⚙️ **Инициализация зависимостей**
 ```bash
@@ -58,7 +58,7 @@
 
 1. 🛠 **Clone repository**  
    ```bash
-   git clone https://github.com/your-repo/eclat.git
+   git clone [https://github.com/your-repo/eclat.git](https://github.com/changemaind90/Eclat-aka-Airbnb.git)
    cd eclat
 
 
