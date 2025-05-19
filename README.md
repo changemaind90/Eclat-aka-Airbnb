@@ -17,7 +17,57 @@
 - **Карты**: Google Maps API  
 - **API**: Axios + REST 
 
-Как запускать:
-1. Клонируем репу через git clone 
-2. Пишем в shell(bash, vscode) npm install
-3. После установки пишем в консольке npm run dev
+1. 🛠 **Клонирование репозитория**  
+   ```bash
+   git clone https://github.com/ваш-репозиторий/eclat.git
+   cd eclat
+2. ⚙️ **Инициализация зависимостей**
+```bash
+  cd client && npm install  # Для клиентской части
+  cd server && npm install  # Для серверной части
+
+3. **🏃 Запуск приложения**
+```bash
+  npm run dev  # Запуск клиента
+  npm run server  # Запуск сервера
+---
+
+### 🇺🇸 English version README.md
+
+```markdown
+# 🏠 Eclat – Airbnb-like Vue 3 App  
+
+✨ **Eclat** – modern accommodation booking platform with intuitive UI and powerful search capabilities.
+
+## 🌟 Key Features  
+
+- 🔍 Smart property search with filters  
+- 🗺️ Google Maps API integration  
+- 💰 Price, rating and amenities filters  
+- 📅 Interactive booking calendar  
+- ⭐ Rating and review system  
+- 🔐 Secure authentication (JWT + OAuth 2.0)  
+
+## 🛠 Tech Stack  
+
+- **Frontend**: Vue 3 + Composition API, Pinia, Vue Router  
+- **UI**: Tailwind CSS + Headless UI  
+- **Maps**: Google Maps JavaScript API  
+- **API**: Axios + RESTful service  
+
+## � Launch Guide  
+
+1. 🛠 **Clone repository**  
+   ```bash
+   git clone https://github.com/your-repo/eclat.git
+   cd eclat
+⚙️ Initialize dependencies
+
+bash
+npm install  # Client-side
+cd server && npm install  # Server-side (if applicable)
+🏃 Run application
+
+bash
+npm run dev  # Start client
+npm run server  # Start server
