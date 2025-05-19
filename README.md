@@ -16,3 +16,8 @@
 - **Frontend**: Vue 3 + Composition API, Pinia, Vue Router  
 - **Карты**: Google Maps API  
 - **API**: Axios + REST 
+
+Как запускать:
+1. Клонируем репу через git clone 
+2. Пишем в shell(bash, vscode) npm install
+3. После установки пишем в консольке npm run dev
