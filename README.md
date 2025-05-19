@@ -25,16 +25,16 @@
 ```bash
   cd client && npm install  # Для клиентской части
   cd server && npm install  # Для серверной части
+```
 
 3. **🏃 Запуск приложения**
 ```bash
   npm run dev  # Запуск клиента
   npm run server  # Запуск сервера
----
+```
 
 ### 🇺🇸 English version README.md
 
-```markdown
 # 🏠 Eclat – Airbnb-like Vue 3 App  
 
 ✨ **Eclat** – modern accommodation booking platform with intuitive UI and powerful search capabilities.
@@ -50,8 +50,7 @@
 
 ## 🛠 Tech Stack  
 
-- **Frontend**: Vue 3 + Composition API, Pinia, Vue Router  
-- **UI**: Tailwind CSS + Headless UI  
+- **Frontend**: Vue 3 + Composition API, Pinia, Vue Router 
 - **Maps**: Google Maps JavaScript API  
 - **API**: Axios + RESTful service  
 
@@ -61,13 +60,16 @@
    ```bash
    git clone https://github.com/your-repo/eclat.git
    cd eclat
-⚙️ Initialize dependencies
 
-bash
-npm install  # Client-side
-cd server && npm install  # Server-side (if applicable)
-🏃 Run application
 
-bash
-npm run dev  # Start client
-npm run server  # Start server
+2. ⚙️ **Initialize dependencies**
+```bash
+  cd client && npm install  # Client-side
+  cd server && npm install  # Server-side
+```
+
+3. **🏃 Run application**
+```bash
+  npm run dev  # Start client
+  npm run server  # Start server
+```
