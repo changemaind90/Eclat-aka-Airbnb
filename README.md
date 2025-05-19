@@ -39,6 +39,7 @@
 ```bash
   cd client && npm install  # Для клиентской части
   cd server && npm install  # Для серверной части
+  npx prisma db push        # Для серверной части
 ```
 
 3. **🏃 Запуск приложения**
@@ -80,6 +81,7 @@
 ```bash
   cd client && npm install  # Client-side
   cd server && npm install  # Server-side
+  npx prisma db push        # Server-side
 ```
 
 3. **🏃 Run application**
