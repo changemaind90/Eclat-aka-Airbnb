@@ -1,5 +1,8 @@
 <template>
   <div class="listings-container">
+    <div v-if="!listings.length" class="empty-message">
+      Нет доступных объявлений
+    </div>
     <div class="listings-grid">
       <ListingCard 
         v-for="listing in paginatedListings"

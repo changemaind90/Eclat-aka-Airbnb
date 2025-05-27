@@ -20,12 +20,11 @@ import NotificationContainer from '@/components/ui/NotificationContainer.vue'
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  position: relative; /* Для корректного позиционирования */
+  position: relative;
 }
 
 .main-content {
   flex: 1;
-  padding: 20px;
-  padding-bottom: 400px; /* Отступ снизу = высота футера */
+  padding-bottom: 200px;
 }
 </style>

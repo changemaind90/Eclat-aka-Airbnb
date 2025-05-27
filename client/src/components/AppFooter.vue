@@ -6,8 +6,7 @@
           <a href="#">
             <img src="@/assets/logo.svg" alt="Логотип приложения" class="logo-img">
             <span class="logo-text">Éclat</span>
-          </a>
-        </div>
+          </a></div>
         <p class="copyright">© 2025 Éclat. Все права защищены</p>
       </div>
 
@@ -15,29 +14,8 @@
         <ul class="footer-menu">
           <li><router-link to="/">Главная</router-link></li>
           <li><router-link to="/about">О приложении</router-link></li>
-          <li><router-link to="/privacy">Политика конфиденциальности</router-link></li>
-        </ul>
-      </div>
-
-      <div class="footer-section contacts-section">
-        <h3 class="section-title">Контакты</h3>
-        <div class="contact-block">
-          <h4>Служба поддержки</h4>
-          <a href="tel:+88005553535" class="contact-link">
-            <span class="contact-icon">📞</span> 8 (800) 555-35-35
-          </a>
-          <a href="mailto:support@hotelfinder.ru" class="contact-link">
-            <span class="contact-icon">✉️</span> support@Éclat.ru
-          </a>
-        </div>
-        <div class="contact-block">
-          <h4>Сотрудничество</h4>
-          <a href="mailto:partners@hotelfinder.ru" class="contact-link">
-            <span class="contact-icon">🤝</span> partners@Éclat.ru
-          </a>
-        </div>
-      </div>
-    </div>
+          <li><router-link to="/maps">Карты</router-link></li>
+        </ul></div></div>
   </footer>
 </template>
 
@@ -48,7 +26,7 @@
 <style scoped>
 .app-footer {
   width: 100%;
-  height: 400px;
+  height: 200px;
   background: linear-gradient(135deg, #3a3229, #5a4a42);
   color: #f5f0e6;
   padding: 40px 0 0 0;
@@ -135,6 +113,7 @@
   text-decoration: none;
   margin-bottom: 10px;
   transition: color 0.3s;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-size: 1rem;
 }
 

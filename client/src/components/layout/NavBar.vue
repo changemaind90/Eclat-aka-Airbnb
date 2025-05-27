@@ -3,7 +3,7 @@
     <div class="nav">
       <RouterLink to="/">Главная</RouterLink>
       <RouterLink to="/about">Создатели</RouterLink>
-      <RouterLink to="/contacts">Контакты</RouterLink>
+      <RouterLink to="/maps">Карты</RouterLink>
       <RouterLink to="/profile" v-if="authStore.isAuthenticated">Профиль</RouterLink>
       <button v-if="authStore.isAuthenticated" @click="authStore.logout">Выйти</button>
       <RouterLink v-else to="/login">Войти</RouterLink>

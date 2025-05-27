@@ -2,7 +2,7 @@
 <template>
   <div class="listing-card" @click="$emit('click')">
     <img 
-      :src="listing.images[0]" 
+      :src="listing.images?.length ? listing.images[0] : '/default-image.jpg'"
       @error="handleImageError" 
       alt="Изображение объявления"
       class="listing-image"
@@ -34,11 +34,11 @@ const handleImageError = (e: Event) => {
 
 <style scoped>
 .listing-card {
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border: 2px solid #000000;
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: transform 0.3s;
 }
 
 .listing-card:hover {

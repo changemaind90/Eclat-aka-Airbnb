@@ -1,10 +1,9 @@
 <template>
-  <div class="contacts">
-    <h1>Наши контакты</h1>
-    <div class="contact-info">
-      <p>Email: contact@rentapp.com</p>
-      <p>Телефон: +7 (000) 00-00-00</p>
-      <p>Адрес: г. Москва, ул. Примерная, 123</p>
+  <div class="map-section">
+    <h1>Карта</h1>
+    <div class="map-info">
+      <p>Если из РФ - Яндекс-карта</p>
+      <p>Если не из РФ - Гугл-карта</p>
     </div>
 
     <div class="map-container">
@@ -74,24 +73,25 @@ onMounted(() => {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Clicker+Script&family=Marck+Script&display=swap');
 
-.contacts {
+.map-section {
   max-width: 100%;
   margin: 0 auto;
   padding: 0;
   text-align: center;
+  margin-bottom: 40px;
 }
 
 h1 {
-  font-family: 'Clicker Script', cursive;
-  font-size: 3rem;
-  color: #5a4a42;
-  margin-bottom: 2rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 64px;
+  margin-bottom: 20px;
 }
 
-.contact-info {
-  font-family: 'Marck Script', cursive;
-  font-size: 1.8rem;
-  color: #6b5b4d;
+.map-info {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: inherit;
+  font-weight: 500;
+  color: inherit;
   line-height: 1.6;
   margin-bottom: 3rem;
 }

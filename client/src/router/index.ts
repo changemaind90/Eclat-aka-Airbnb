@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import AboutView from '../views/AboutView.vue'
-import ContactsView from '../views/ContactsView.vue'
+import Creators from '../views/Creators.vue'
+import MapsView from '../views/MapsView.vue'
 
 const routes = [
   {
@@ -12,12 +12,12 @@ const routes = [
   {
     path: '/about',
     name: 'about',
-    component: AboutView
+    component: Creators
   },
   {
-    path: '/contacts',
-    name: 'contacts',
-    component: ContactsView
+    path: '/maps',
+    name: 'maps',
+    component: MapsView
   },
   {
     path: '/listing/:id',
@@ -38,6 +38,16 @@ const routes = [
     meta: { guestOnly: true }
   },
   {
+    path: '/404',
+    name: 'not-found',
+    component: () => import('@/views/NotFoundView.vue')
+  },
+  // Изменяем обработку неизвестных путей
+  { 
+    path: '/:pathMatch(.*)*', 
+    redirect: '/404' // Перенаправляем на страницу 404 вместо главной
+  },
+  {
     path: '/register',
     name: 'register',
     component: () => import('@/views/AuthView.vue'),
@@ -47,27 +57,61 @@ const routes = [
     redirect: '/'}]
     
 const router = createRouter({history: createWebHistory(),routes})
-/* router.onError(() => {
-  if (error.response?.status === 404) {router.push('/not-found')}}) */
-// Навигационный guard
-router.beforeEach((to, from, next) => {
+
+router.onError((error) => {
+  if ((error as any).code === '404' || (error as any).status === 404) {
+    router.push('/404')
+  } else {
+    console.error('Навигационная ошибка:', error)
+  }
+})
+
+router.beforeEach((to, from, next) => {                       // Навигационный guard
   const authStore = useAuthStore()
- /*  console.log(`Navigation from ${from.path} to ${to.path}`) */
- console.log('Навигация:', {
+
+  const hasToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+
+  console.log('Навигация:', {
   from: from.path,
   to: to.path,
   isAuthenticated: authStore.isAuthenticated,
-  hasToken: !!localStorage.getItem('token')});
+  hasToken: !!localStorage.getItem('token')})
+
+  if (!authStore.isAuthenticated && hasToken) {
+    authStore.checkAuth()
+      .then(() => {
+        checkRouteAccess();
+      })
+      .catch(() => {
+        authStore.logout();
+        next('/login');
+      });
+    return;
+  }
+
+  checkRouteAccess();
+
+  function checkRouteAccess() {
+    if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+      next('/login');
+    } else if (to.meta.guestOnly && authStore.isAuthenticated) {
+      next('/');
+    } else {
+      next();
+    }
+  }
+
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     console.log('Доступ запрещен: требуется авторизация')
     return next('/login')}
+
   if (to.meta.guestOnly && authStore.isAuthenticated) {
     return next('/')}
+
   next()})
-router.onError((error) => { console.error('Навигационная ошибка:', error)})
-// Лог всех зарегистрированных маршрутов
-console.log('Available routes:', routes.map(r => r.path))
-// Проверка инициализации
-router.isReady().then(() => {
+
+console.log('Доступные маршруты:', routes.map(r => r.path))     // Лог всех зарегистрированных маршрутов
+
+router.isReady().then(() => {                                   // Проверка инициализации
   console.log('Router is ready! Current route:', router.currentRoute.value)})
 export default router

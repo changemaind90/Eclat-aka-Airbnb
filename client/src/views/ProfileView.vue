@@ -9,18 +9,24 @@
 
 <script setup lang="ts">
 import { useAuthStore, useListingsStore } from '@/stores'
-import { computed, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import UserInfo from '@/components/UserInfo.vue'
 import UserListings from '@/components/UserListings.vue'
 import CreateListingForm from '@/components/CreateListingForm.vue'
 
 const authStore = useAuthStore()
 const listingsStore = useListingsStore()
+const loading = ref(false)
 
 const user = computed(() => authStore.user)
 
+const userListings = computed(() => 
+  listingsStore.allListings.filter(
+    listing => listing.userId === authStore.user?.id
+  )
+)
 // Явно указываем тип DOM FormData
-const handleCreateListing = async (listingData: HTMLFormElement | FormData) => {
+/* const handleCreateListing = async (listingData: HTMLFormElement | FormData) => {
   let formData: FormData;
   
   if (listingData instanceof HTMLFormElement) {
@@ -31,7 +37,27 @@ const handleCreateListing = async (listingData: HTMLFormElement | FormData) => {
   
   await listingsStore.createNewListing(formData);
   await listingsStore.fetchAllListings();
+} */
+
+const handleCreateListing = async (formData: FormData) => {
+  try {
+    loading.value = true
+    await listingsStore.createNewListing(formData)
+    await listingsStore.fetchAllListings()
+  } finally {
+    loading.value = false
+  }
 }
+
+onMounted(async () => {
+  loading.value = true
+  try {
+    await authStore.checkAuth()
+    await listingsStore.fetchAllListings()
+  } finally {
+    loading.value = false
+  }
+})
 
 const userListings = computed(() => 
   listingsStore.allListings.filter(
@@ -44,6 +70,7 @@ onMounted(async () => {
   await listingsStore.fetchAllListings();
 })
 </script>
+
 <style>
 .profile-inner {
   max-width: 1200px;

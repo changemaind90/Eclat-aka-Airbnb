@@ -21,7 +21,7 @@ export const useListingsStore = defineStore('listings', {
     } finally {
       this.isLoading = false } },
 
-    async fetchAllListings() {
+    /* async fetchAllListings() {
       this.isLoading = true
       try {
         const response = await fetch('https://jsonplaceholder.typicode.com/photos?_limit=10')
@@ -42,7 +42,30 @@ export const useListingsStore = defineStore('listings', {
           createdAt: new Date().toISOString() }))
       } catch (error) {
         console.error('Ошибка загрузки:', error)
-      } finally { this.isLoading = false } },
+      } finally { this.isLoading = false } }, */
+
+      async fetchAllListings() {
+        try {
+          this.loading = true
+          const response = await api.get('/booking/api/listings')
+          this.allListings = response.data
+        } finally {
+          this.loading = false
+        }
+      },
+      async createNewListing(formData: FormData) {
+        try {
+          this.loading = true
+          const response = await api.post('/booking/api/listings', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          return response.data
+        } finally {
+          this.loading = false
+        }
+      },
 
     async fetchById(id: number): Promise<Listing> {
       this.isLoading = true

@@ -1,9 +1,10 @@
 <template>
-  <div class="page-wrapper" :style="pageBackground">
+  <div class="page-wrapper">
     <div class="about">
-      <h1>О нашем приложении</h1>
-      <p>Это приложение для аренды квартир помогает найти идеальное жилье по вашим параметрам.</p>
-      <p>Мы работаем с 2025 года и уже помогли сотням клиентов.</p>
+      <h1>О приложении</h1>
+      <p>Это приложение для аренды квартир</p>
+      <p>Дизайн/верстка <a href="">changemaind90</a></p>
+      <p>Бэкенд <a href="">AlanKerry1</a></p>
       <hr class="hr">
       <div class="tech-visualization">
         <div class="images-container">
@@ -47,7 +48,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 //смена цвета фона страницы
 const isFrontendHover = ref<boolean>(false)
 const isBackendHover = ref<boolean>(false)
@@ -57,14 +58,6 @@ const handleFrontendHover = (state: boolean): void => {
 const handleBackendHover = (state: boolean): void => {
   isBackendHover.value = state
   if (!state) isFrontendHover.value = false }
-const pageBackground = computed(() => {
-  return {
-    backgroundColor: isFrontendHover.value 
-      ? 'rgba(102, 126, 234, 0.1)'
-      : isBackendHover.value
-        ? 'rgba(240, 147, 251, 0.1)'
-        : 'transparent',
-    transition: 'background-color 0.5s ease'  }})
 const frontendSteps = ref([
   { tech: 'HTML5, CSS3, JS', icon: '🛠️' },
   { tech: 'TypeScript', icon: '🧰' },

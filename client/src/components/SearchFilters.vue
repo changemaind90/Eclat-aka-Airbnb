@@ -25,12 +25,30 @@ const handleInput = () => {
 <style scoped>
 .search-filters {
   display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 800px;
   gap: 10px;
   margin-bottom: 20px;
 }
 input, select {
+  font-family: Arial, Helvetica, sans-serif;
   padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid #fff;
+  border-radius: 8px;
+  color: #fff;
+  background: transparent;
+  &::placeholder{
+    color: #fff;
+  }
+  & option {
+    background: #f5f5dc;
+    color: #333; 
+  }
+  &:focus {
+     outline: none;
+    border-color: white;
+    box-shadow: 0 0 0 1px white;
+  }
 }
 </style>
