@@ -6,6 +6,8 @@ import { BookingModule } from './booking/booking.module';
 import { ListingsService } from './listings/listings.service';
 import { ListingsController } from './listings/listings.controller';
 import { ListingsModule } from './listings/listings.module';
+import { PaymentsModule } from './payments/payments.module';
+import { ReviewsModule } from './reviews/reviews.module';
 
 @Module({
   imports: [AuthModule,
@@ -14,7 +16,9 @@ import { ListingsModule } from './listings/listings.module';
       envFilePath: ".env"
     }),
     BookingModule,
-    ListingsModule
+    ListingsModule,
+    PaymentsModule,
+    ReviewsModule
   ],
   providers: [PrismaService, ListingsService],
   controllers: [ListingsController],

@@ -1,105 +1,21 @@
-/* import { defineStore } from "pinia"
-import api from "@/api"
-import type { User } from "@/types"
+import { defineStore } from "pinia";
+import api from "@/api";
+import type { User, Booking } from "@/types";
+import type { Router } from 'vue-router'
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     isAuthenticated: false,
     user: null as User | null,
     error: null as string | null,
-    isLoading: false
+    isLoading: false,
   }),
-  actions: {
-    async login(credentials: { email: string; password: string; rememberMe?: boolean }) {
-      try {
-        console.log('Попытка входа для:', credentials.email)
-        this.isLoading = true
-        const response = await api.post("/auth/login", credentials)
-        console.log("Полный ответ сервера:", response.data)
-        if (response.data.accessToken) {
-          if (credentials.rememberMe) {
-            localStorage.setItem("token", response.data.accessToken)
-          } else { sessionStorage.setItem("token", response.data.accessToken) }
-          this.user = response.data.user
-          this.isAuthenticated = true
-          this.error = null
-          return { token: response.data.accessToken, user: response.data.user }
-        }
-        return response.data
-      } catch (error: any) {
-        this.error = error.message || "Неверные учетные данные"
-        throw error
-      } finally { this.isLoading = false }
-    },
-    async socialLogin(provider: string) { window.location.href = `${import.meta.env.VITE_API_URL}/auth/${provider}` },
-    async register(userData: {
-      name: string;
-      email: string;
-      password: string;
-    }) {
-      try {
-        this.isLoading = true;
-        const response = await api.post("/auth/register", userData);
-        if (response.data.token) {
-          localStorage.setItem("token", response.data.token)
-          this.user = response.data.user
-          this.isAuthenticated = true
-          this.error = null
-          return response.data
-        }
-      } catch (error: any) {
-        this.error = error.message || "Ошибка регистрации"
-        throw error
-      } finally { this.isLoading = false }
-    },
-    logout() {
-      console.log('Выполнение выхода...')
-      localStorage.removeItem('token')
-      sessionStorage.removeItem('token')
-      this.isAuthenticated = false
-      this.user = null
-      console.log('Выход выполнен')
-    },
-    async checkAuth() {
-      try {
-        this.isLoading = true
-        console.log('Проверка авторизации...')
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-        console.log('Найден токен:', !!token)
-        if (!token){
-          console.log('Токен не найден - пользователь не авторизован')
-          return false }
-        const response = await api.get('/user')
-        if (!response.data?.id) throw new Error('Invalid user data')
-        this.user = response.data
-        this.isAuthenticated = true
-        return true
-      } catch (error) {
-        if (error.response?.status === 401) {
-          this.logout()
-        }
-        return false
-      } finally { this.isLoading = false }
-    },
-  },
-})
- */
-
-import { defineStore } from "pinia"
-import api from "@/api"
-import type { User } from "@/types"
-
-export const useAuthStore = defineStore("auth", {
-  state: () => ({
-    isAuthenticated: false,
-    user: null as User | null,
-    error: null as string | null,
-    isLoading: false
-  }),  
 
   actions: {
-     initialize() {
-      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    initialize() {
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+        // console.log(token)
       if (token) {
         this.isAuthenticated = true;
         // Автоматически проверяем токен при инициализации
@@ -107,90 +23,169 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    async login(credentials: { email: string; password: string; rememberMe?: boolean }) {
+    async login(credentials: {
+      email: string;
+      password: string;
+      rememberMe?: boolean;
+    }) {
       try {
-        console.log('[Auth] Login attempt for:', credentials.email)
-        this.isLoading = true
-        this.error = null
-         const response = await api.post("/auth/login", credentials)
-        console.log('[Auth] Login response:', response.data)
+        console.log("[Auth] Login attempt for:", credentials.email);
+        this.isLoading = true;
+        this.error = null;
+        const response = await api.post("/auth/login", credentials);
+        console.log("[Авторизация] Ответ:", response.data);
         if (!response.data?.accessToken) {
-          throw new Error('No access token received')
+          throw new Error("Нет токена!");
         }
-        const storage = credentials.rememberMe ? localStorage : sessionStorage
-        storage.setItem("token", response.data.accessToken)
-        console.log(`[Auth] Token stored in ${credentials.rememberMe ? 'localStorage' : 'sessionStorage'}`)
-        this.user = response.data.user
-        this.isAuthenticated = true
-        console.log('[Auth] Login successful for:', this.user?.email)
-        return response.data
+        const storage = credentials.rememberMe ? localStorage : sessionStorage;
+        storage.setItem("token", response.data.accessToken);
+        console.log(
+          `[Аторизация] Токен сохранен в: ${
+            credentials.rememberMe ? "localStorage" : "sessionStorage"
+          }`
+        );
+        this.user = response.data.user;
+        this.isAuthenticated = true;
+        console.log("[Auth] Login successful for:", this.user?.email);
+        return response.data;
       } catch (error: any) {
-        console.error('[Auth] Login error:', error)
-        this.error = error.message || "Неверные учетные данные"
-        throw error
-      } finally {  this.isLoading = false  } },
+        console.error("[Авторизация] Ошибка авторизации", error);
+        this.error = error.message || "Неверные учетные данные";
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },
 
-    async register(userData: { name: string; email: string; password: string }) {
+    async register(userData: {
+      name: string;
+      email: string;
+      password: string;
+    }) {
       try {
-        console.log('[Auth] Registration attempt for:', userData.email)
-        this.isLoading = true
-        this.error = null
-        const response = await api.post("/auth/register", userData)
-        console.log('[Auth] Registration response:', response.data)
+        console.log("[Auth] Registration attempt for:", userData.email);
+        this.isLoading = true;
+        this.error = null;
+        const response = await api.post("/auth/register", userData);
+        console.log("[Auth] Registration response:", response.data);
 
         if (!response.data?.token) {
-          throw new Error('No token received')
+          throw new Error("No token received");
         }
-        localStorage.setItem("token", response.data.token)
-        this.user = response.data.user
-        this.isAuthenticated = true
-        console.log('[Auth] Registration successful for:', this.user?.email)
-        return response.data
+        localStorage.setItem("token", response.data.token);
+        this.user = response.data.user;
+        this.isAuthenticated = true;
+        console.log("[Auth] Registration successful for:", this.user?.email);
+        return response.data;
       } catch (error: any) {
-        console.error('[Auth] Registration error:', error)
-        this.error = error.message || "Ошибка регистрации"
-        throw error
-      } finally { 
-        this.isLoading = false   } },
+        console.error("[Auth] Registration error:", error);
+        this.error = error.message || "Ошибка регистрации";
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },async fetchUserBookings(): Promise<Booking[]> {
+      try {
+        const response = await api.get('/booking');
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+        throw error;
+      }
+    },
+
+  // Создать бронь
+  async createBooking(listingId: number, dates: { start: string; end: string }): Promise<Booking> {
+    try {
+      const response = await api.post('/booking', { 
+        listingId,
+        ...dates
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating booking:', error);
+      throw error;
+    }
+  },
+
+  // Отменить бронь
+  async cancelBooking(bookingId: number): Promise<void> {
+    try {
+      await api.post(`/booking/cancel/${bookingId}`);
+    } catch (error) {
+      console.error('Error cancelling booking:', error);
+      throw error;
+    }
+  },
+
+      // Подтвердить завершение брони
+      async completeBooking(bookingId: number): Promise<void> {
+        try {
+          await api.post(`/booking/complete/${bookingId}`);
+        } catch (error) {
+          console.error('Error completing booking:', error);
+          throw error;
+        }
+      },
 
     async checkAuth() {
       try {
-        console.log('[Auth] Checking authentication...')
-        this.isLoading = true
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-        console.log('[Auth] Token exists:', !!token)
-        if (!token) { console.log('[Auth] No token found')
-          return false
+        console.log("[Auth] Проверка авторизации");
+        this.isLoading = true;
+        const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+        console.log("[Auth] Токен есть!:", !!token);
+
+        if (!token) {
+          console.log("[Auth] Токен не найден");
+          return false;
         }
 
-        const response = await api.get('/booking/api/user')
-        console.log('[Auth] User data received:', !!response.data)
-                if (!response.data?.id) {
-          throw new Error('Invalid user data')
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        console.log("Декодированные данные токена:", payload);
+        console.log("sub есть:", 'sub' in payload);
+        const userId = Number(payload.sub || payload.id || payload.userId);
+        console.log("Декодируем юзер ID:", payload.sub, "->", userId);
+
+       if (!userId || isNaN(Number(userId))) {
+          console.error("Invalid user ID in token:", userId);
+          throw new Error("Invalid user ID");
         }
-        this.user = response.data
-        this.isAuthenticated = true
-        console.log('[Auth] User authenticated:', this.user.email)
-                return true
+
+        this.user = {
+          id: Number(userId),
+          name: payload.name || "",
+          email: payload.email,
+          createdAt: new Date().toISOString(),
+        };
+        console.log("[Auth] User ID установлен:", this.user.id);
+        this.isAuthenticated = true;
+        console.log("[Auth] User ID установлен:", this.user.id);
+        console.log("[Auth] Залогинен по токену");
+        return true;
       } catch (error: any) {
-        console.error('[Auth] Check auth error:', error)
-                if (error.response?.status === 401) {
-          console.log('[Auth] 401 error - performing logout')
-          this.logout()
-        }        
-        return false
-      } finally { 
-        this.isLoading = false 
-      }},
-    logout() {
-      console.log('[Auth] Logging out...')
-      localStorage.removeItem("token")
-      sessionStorage.removeItem("token")
-      this.isAuthenticated = false
-      this.user = null
-      console.log('[Auth] Logout completed')
+        console.error("[Auth] Ошибка проверки логина пользователя:", error);
+        this.logout();
+        return false;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    logout(router?: Router) {
+      console.log("[Auth] Logging out...");
+      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
+      this.isAuthenticated = false;
+      this.user = null;
+       if (router) {
+          router.push('/login');
+        }
+      console.log("[Auth] Logout completed");
+      
     },
     async socialLogin(provider: string) {
-      console.log('[Auth] Social login with:', provider)
-      window.location.href = `${import.meta.env.VITE_API_URL}/auth/${provider}`
-    }}})
+      console.log("[Auth] Social login with:", provider);
+      window.location.href = `${import.meta.env.VITE_API_URL}/auth/${provider}`;
+    },
+  },
+});

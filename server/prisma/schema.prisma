@@ -21,58 +21,78 @@ enum Status {
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
-  email String  @unique
+  id           Int     @id @default(autoincrement())
+  email        String  @unique
   passwordHash String?
   refreshToken String?
+  balance      Int     @default(0)
 
-  listings Listing[]
-  bookings Booking[]
-  reviews Review[]
+  listings     Listing[]
+  bookings     Booking[]
+  reviews      Review[]
+  sentTxns     Transaction[] @relation("SentTransactions")
+  receivedTxns Transaction[] @relation("ReceivedTransactions")
 }
 
 model Listing {
-  id    Int     @default(autoincrement()) @id
-  title String
-  description String
-  address String
-  pricePerNight Int
+  id             Int    @id @default(autoincrement())
+  title          String
+  description    String
+  address        String
+  pricePerNight  Int
   numberOfGuests Int
 
-  reviews Review[]
+  transactions Transaction[]
+
+  reviews  Review[]
   bookings Booking[]
 
-  owner User @relation(fields: [ownerId], references: [id])
+  owner   User @relation(fields: [ownerId], references: [id])
   ownerId Int
 }
 
 model Booking {
-  id    Int     @default(autoincrement()) @id
-  startDate DateTime
-  endDate DateTime
+  id         Int      @id @default(autoincrement())
+  startDate  DateTime
+  endDate    DateTime
   totalPrice Int
-  status Status
+  status     Status
 
   reviews Review[]
 
-  user User @relation(fields: [userId], references: [id])
+  user   User @relation(fields: [userId], references: [id])
   userId Int
 
-  listing Listing @relation(fields: [listingId], references: [id])
+  listing   Listing @relation(fields: [listingId], references: [id])
   listingId Int
 }
 
 model Review {
-  id    Int     @default(autoincrement()) @id
-  rating Int
+  id      Int    @id @default(autoincrement())
+  rating  Int
   comment String
 
-  author User @relation(fields: [authorId], references: [id])
+  author   User @relation(fields: [authorId], references: [id])
   authorId Int
 
-  listing Listing @relation(fields: [listingId], references: [id])
+  listing   Listing @relation(fields: [listingId], references: [id])
   listingId Int
 
-  booking Booking @relation(fields: [bookingId], references: [id])
+  booking   Booking @relation(fields: [bookingId], references: [id])
   bookingId Int
+}
+
+model Transaction {
+  id        Int    @id @default(autoincrement())
+  amount    Int
+  paymentId String
+
+  from   User @relation("SentTransactions", fields: [fromId], references: [id])
+  fromId Int
+
+  to   User? @relation("ReceivedTransactions", fields: [toId], references: [id])
+  toId Int?
+
+  listing   Listing? @relation(fields: [listingId], references: [id])
+  listingId Int?
 }

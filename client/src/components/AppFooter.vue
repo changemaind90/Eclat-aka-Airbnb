@@ -7,7 +7,7 @@
             <img src="@/assets/logo.svg" alt="Логотип приложения" class="logo-img">
             <span class="logo-text">Éclat</span>
           </a></div>
-        <p class="copyright">© 2025 Éclat. Все права защищены</p>
+        <p class="copyright">© 2025 Éclat.</p>
       </div>
 
       <div class="footer-section menu-section">

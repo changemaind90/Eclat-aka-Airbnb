@@ -2,78 +2,140 @@
   <div class="profile-view">
     <div class="profile-inner">
       <UserInfo v-if="user" :user="user" />
-      <UserListings :listings="userListings" />
-      <CreateListingForm @submit="handleCreateListing" />
-    </div></div>
+      <div v-if="loading">Загрузка ваших бронирований...</div>
+      <div v-else-if="error">{{ error }}</div>
+      <div class="listings-container">
+        <ListingCard
+          v-for="listing in displayedListings"
+          :key="listing.id"
+          :listing="listing"
+          :can-book="authStore.isAuthenticated"
+          @book="handleBook"
+          :can-cancel="authStore.isAuthenticated"
+          :can-edit="
+            authStore.user?.id !== undefined &&
+            Number(authStore.user.id) === listing.userId
+          "
+          @edit="handleEdit"
+          @click="goToListing(listing.id)"
+          @cancel-booking="cancelBooking"
+        />
+      </div>
+    </div>
+
+    <CreateListingForm
+      v-if="authStore.isAuthenticated"
+      @success="handleUpdateSuccess"
+      @cancel="editingListing = null"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { useAuthStore, useListingsStore } from '@/stores'
-import { computed, ref, onMounted } from 'vue'
-import UserInfo from '@/components/UserInfo.vue'
-import UserListings from '@/components/UserListings.vue'
-import CreateListingForm from '@/components/CreateListingForm.vue'
+import { ref, onMounted, computed, watch  } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore, useListingsStore } from "@/stores";
+import UserInfo from "@/components/UserInfo.vue";
+import CreateListingForm from "@/components/CreateListingForm.vue";
+import ListingCard from "@/components/ListingCard.vue";
+import type { Listing } from "@/types";
 
-const authStore = useAuthStore()
-const listingsStore = useListingsStore()
-const loading = ref(false)
+const authStore = useAuthStore();
+const listingsStore = useListingsStore();
+const router = useRouter();
 
-const user = computed(() => authStore.user)
+const loading = ref(false);
+const error = ref<string | null>(null);
+const bookings = ref<Listing[]>([]);
+const userListings = ref<Listing[]>([]);
+const editingListing = ref<Listing | null>(null);
 
-const userListings = computed(() => 
-  listingsStore.allListings.filter(
-    listing => listing.userId === authStore.user?.id
-  )
-)
-// Явно указываем тип DOM FormData
-/* const handleCreateListing = async (listingData: HTMLFormElement | FormData) => {
-  let formData: FormData;
-  
-  if (listingData instanceof HTMLFormElement) {
-    formData = new FormData(listingData);
-  } else {
-    formData = listingData;
+const user = computed(() => authStore.user);
+
+watch(() => authStore.user?.id, (newId) => {
+  if (newId && !isNaN(newId)) {
+    listingsStore.fetchUserListings();
   }
-  
-  await listingsStore.createNewListing(formData);
-  await listingsStore.fetchAllListings();
-} */
+}, { immediate: true });
 
-const handleCreateListing = async (formData: FormData) => {
+// Объединенные списки для отображения
+const displayedListings = computed(() => [
+  ...bookings.value,
+  ...userListings.value,
+]);
+
+const goToListing = (id: number) => {
+  router.push(`/listing/${id}`);
+};
+
+const handleBook = async (listingId: number) => {
+  console.log('Booking initiated for:', listingId)
   try {
-    loading.value = true
-    await listingsStore.createNewListing(formData)
-    await listingsStore.fetchAllListings()
-  } finally {
-    loading.value = false
+    console.log("Попытка забронировать:", listingId);
+    await listingsStore.createBooking(listingId, {
+      start: new Date().toISOString().split("T")[0],
+      end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+    });
+    console.log("Бронирование успешно");
+  } catch (error) {
+    console.error("Ошибка бронирования:", error);
   }
-}
+};
+
+const handleEdit = (listing: Listing) => {
+  editingListing.value = listing;
+};
+
+const handleUpdateSuccess = async () => {
+  editingListing.value = null;
+  await loadData();
+};
+
+const cancelBooking = async (bookingId: number) => {
+  try {
+    await listingsStore.cancelBooking(bookingId.toString());
+    // Обновляем список броней
+    await loadData();
+  } catch (error: any) {
+    error.value = "Ошибка отмены бронирования";
+  }
+};
+
+const loadData = async () => {
+  loading.value = true;
+  try {
+    await authStore.checkAuth();
+
+    // Загружаем бронирования и объявления параллельно
+    const bookingsData = await listingsStore.fetchUserBookings();
+    const listingsData = await listingsStore.fetchUserListings(
+      authStore.user?.id ? Number(authStore.user.id) : undefined
+    );
+
+    if (Array.isArray(bookingsData)) {
+      bookings.value = bookingsData;
+    }
+
+    if (Array.isArray(listingsData)) {
+      userListings.value = listingsData;
+    }
+  } catch (e) {
+    error.value = "Ошибка загрузки данных";
+  } finally {
+    loading.value = false;
+  }
+};
 
 onMounted(async () => {
-  loading.value = true
-  try {
-    await authStore.checkAuth()
-    await listingsStore.fetchAllListings()
-  } finally {
-    loading.value = false
-  }
-})
-
-const userListings = computed(() => 
-  listingsStore.allListings.filter(
-    (listing) => listing.userId === Number(authStore.user?.id)
-  )
-)
-
-onMounted(async () => {
-  await authStore.checkAuth();
-  await listingsStore.fetchAllListings();
-})
+  await loadData();
+});
 </script>
 
 <style>
 .profile-inner {
-  max-width: 1200px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 20px;
 }

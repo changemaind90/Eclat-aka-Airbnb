@@ -1,5 +1,5 @@
 export interface User {
-  id: string
+  id: number
   name: string
   email: string
   avatar?: string
@@ -13,9 +13,6 @@ export interface Listing {
   price: number
   address: string
   city: string
-  bedrooms: number
-  bathrooms: number
-  amenities: string[]
   images: string[]
   userId: number
   user?: User
@@ -28,10 +25,6 @@ export interface ListingCreateDto {
   price: number
   address: string
   city: string
-  bedrooms: number
-  bathrooms: number
-  amenities: string[]
-  images: File[]
 }
 
 export interface AuthResponse {
@@ -43,4 +36,13 @@ export interface ApiError {
   message: string
   statusCode: number
   errors?: Record<string, string[]>
+}
+
+export interface Booking {
+  id: number;
+  listingId: number;
+  userId: number;
+  startDate: string;
+  endDate: string;
+  createdAt: string;
 }

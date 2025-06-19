@@ -1,89 +1,173 @@
-import { defineStore } from 'pinia'
-import api from '@/api'
-import type { Listing } from '@/types'
+import { defineStore } from "pinia";
+import api from "@/api";
+import type { Listing } from "@/types";
+import { useAuthStore } from "@/stores/auth";
 
-export const useListingsStore = defineStore('listings', {
+export const useListingsStore = defineStore("listings", {
   state: () => ({
     allListings: [] as Listing[],
     userListings: [] as Listing[],
     currentListing: null as Listing | null,
     isLoading: false,
-    error: null as string | null }),
-  
+    error: null as string | null,
+    // add 13 06 25
+    listings: [] as Listing[],
+    loadingStates: new Map<number, boolean>(),
+    // add 190625 
+    userBookings: [] as Booking[],
+  }),
+
   actions: {
-    async fetchUserListings(userId: string) {
-    this.isLoading = true
-    try {
-      // Замените на реальный API-запрос
-      this.userListings = this.allListings.filter(l => l.userId === userId)
-    } catch (error) {
-      console.error('Ошибка загрузки:', error)
-    } finally {
-      this.isLoading = false } },
-
-    /* async fetchAllListings() {
-      this.isLoading = true
+    async fetchUserListings(_userId?: number) {
       try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/photos?_limit=10')
-        const data = await response.json()
-        
-        this.allListings = data.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          description: item.title, // Добавлено
-          price: Math.floor(Math.random() * 10000) + 1000,
-          address: `ул. Примерная, ${item.id}`,
-          city: ['Москва', 'Санкт-Петербург', 'Сочи'][Math.floor(Math.random() * 3)],
-          bedrooms: Math.floor(Math.random() * 3) + 1,
-          bathrooms: Math.floor(Math.random() * 2) + 1,
-          amenities: ['Wi-Fi', 'TV', 'Кондиционер'].slice(0, Math.floor(Math.random() * 3) + 1),
-          images: [item.url, item.thumbnailUrl],
-          userId: item.albumId,
-          createdAt: new Date().toISOString() }))
+        this.isLoading = true;
+        const authStore = useAuthStore();
+         if (!authStore.user?.id || isNaN(authStore.user.id)) {
+            throw new Error("User ID не доступен или невалиден");
+          }
+        const response = await api.get(`/listings?userId=${authStore.user.id}`);
+        this.userListings = response.data;
       } catch (error) {
-        console.error('Ошибка загрузки:', error)
-      } finally { this.isLoading = false } }, */
+        console.error("Ошибка загрузки:", error);
+        this.error = "Ошибка загрузки объявлений пользователя";
+      } finally {
+        this.isLoading = false;
+      }
+    },
 
-      async fetchAllListings() {
-        try {
-          this.loading = true
-          const response = await api.get('/booking/api/listings')
-          this.allListings = response.data
-        } finally {
-          this.loading = false
-        }
-      },
-      async createNewListing(formData: FormData) {
-        try {
-          this.loading = true
-          const response = await api.post('/booking/api/listings', formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
-          return response.data
-        } finally {
-          this.loading = false
-        }
-      },
-
-    async fetchById(id: number): Promise<Listing> {
-      this.isLoading = true
+    async fetchAllListings() {
       try {
-        const listing = this.allListings.find(item => item.id === id)
-        if (!listing) throw new Error('Объявление не найдено')
+        this.isLoading = true;
+        const response = await api.get("/listings/all");
+        this.allListings = response.data;
+      } catch (error) {
+        console.error("Ошибка загрузки:", error);
+        this.error = "Ошибка загрузки всех объявлений";
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async fetchUserBookings() {
+      try {
+        const response = await api.get('/booking')
+        this.userBookings = response.data
+      } catch (error) {
+        console.error("Ошибка загрузки бронирований:", error)
+      }
+    },
+
+    async fetchById(id: string): Promise<Listing> {
+      this.isLoading = true;
+      try {
+        const response = await api.get(`/listings/${id}`);
+        this.currentListing = response.data;
+        return response.data;
+      } catch (error) {
+        console.error("Ошибка загрузки:", error);
+        this.error = "Объявление не найдено";
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async deleteListing(id: string) {
+      try {
+        await api.delete(`/listings/${id}`);
+      } catch (error) {
+        console.error("Error deleting listing:", error);
+        throw error;
+      }
+    },
+
+    async updateListing(id: string, data: Partial<Listing>): Promise<Listing> {
+      try {
+        const authStore = useAuthStore();
+        // Проверяем, что пользователь владелец
+        const listing = this.userListings.find((l) => l.id === Number(id));
+        if (!listing || listing.userId !== Number(authStore.user?.id)) {
+          throw new Error(
+            "Вы не можете редактировать объявление потому что вы его не подавали!"
+          );
+        }
+
+        const response = await api.patch(`/listings/${id}`, data);
+        return response.data;
+      } catch (error) {
+        console.error("Error updating listing:", error);
+        throw error;
+      }
+    },
+
+    async createBooking(listingId: number, dates: { start: string; end: string }) {
+        try {
+       /*  const authStore = useAuthStore()
+        if (!authStore.user?.id) throw new Error("Требуется авторизация") */
         
-        this.currentListing = listing
-        return listing
-      } catch (err) {
-        this.error = err instanceof Error ? err.message : 'Ошибка загрузки'
-        throw err
-      } finally { this.isLoading = false } } ,
+        const response = await api.post('/booking', {
+          listingId,
+          startDate: dates.start,
+          endDate: dates.end
+        })
 
-    async createNewListing(listingData: FormData) {
+        /* console.log("Данные для брони:", {
+          listingId: typeof listingId,
+          startDate: dates.start,      
+          endDate: dates.end,          
+          userId: typeof authStore.user.id  
+        }); */
+
+        console.log("Данные для брони:", {
+          listingId: typeof listingId,
+          startDate: dates.start,      
+          endDate: dates.end,
+        });
+        return response.data
+      } catch (error) {
+        console.error("Ошибка бронирования:", error)
+        throw error
+      }
+    },
+
+    async cancelBooking(bookingId: number) {
       try {
+        const response = await api.post(`/booking/cancel/${bookingId}`);
+        console.log("Отмена брони:", response.data);
+        await this.fetchUserBookings()
+        return response.data;
+      } catch (error: any) {
+        console.error("Ошибка отмены:", error.response?.data || error.message);
+        throw error;
+      }
+    },
+
+    async createNewListing(listingData: {
+      title: string;
+      description: string;
+      address: string;
+      pricePerNight: number;
+      numberOfGuests: number;
+    }): Promise<Listing> {
+      this.isLoading = true;
+      try {
+        const authStore = useAuthStore();
+
+        if (!authStore.user) {
+          throw new Error("Пользователь не авторизован");
+        }
+
         this.isLoading = true
-        const { data: newListing } = await api.post('/listings', listingData)
-        this.allListings.push(newListing)
-      } catch (error) { this.error = 'Ошибка создания объявления'
-      } finally { this.isLoading = false } } } })
+        const response = await api.post("/listings", listingData)
+        this.userListings.push(response.data)
+        return response.data
+      } catch (error) {
+        console.error("Ошибка создания:", error);
+        this.error = "Ошибка создания объявления";
+        throw error;
+      } finally {
+        this.isLoading = false;
+      }
+    },
+  },
+});

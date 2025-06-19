@@ -18,11 +18,11 @@ export class ListingsService {
     });
   }
 
-  async findAll(userId: number) {
-    if (userId) {
-      return await this.prisma.listing.findMany({where: {id: userId}});
-    }
+  async find(userId: number) {
+    return await this.prisma.listing.findMany({where: {id: userId}});
+  }
 
+  async findAll() {
     return await this.prisma.listing.findMany();
   }
 
