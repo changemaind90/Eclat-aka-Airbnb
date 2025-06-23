@@ -53,6 +53,7 @@ export const useListingsStore = defineStore("listings", {
       try {
         const response = await api.get('/booking')
         this.userBookings = response.data
+				return response.data
       } catch (error) {
         console.error("Ошибка загрузки бронирований:", error)
       }
