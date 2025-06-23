@@ -28,16 +28,16 @@
       </div>
 
       <div class="form-group">
-        <label>Адрес (Страна, Город, Улица, Дом):</label>
         <input 
           v-model="formData.address" 
           required 
           type="text"
-          placeholder="Например: Россия, Москва, ул. Ленина, 1/4"
+          placeholder="Адресс, Например: Россия, Москва, ул. Ленина, 1/4"
         >
       </div>
 
       <div class="form-group">
+		  <div> Цена за ночь: </div>
         <input
           v-model.number="formData.pricePerNight" 
           required 
@@ -49,6 +49,7 @@
       </div>
 
       <div class="form-group">
+		  <div> Введите число гостей:</div>
         <input 
           v-model.number="formData.numberOfGuests" 
           required 
