@@ -8,7 +8,7 @@ export class ListingsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createListingDto: CreateListingDto, userId: number) {
-    return await this.prisma.listing.create({
+    return this.prisma.listing.create({
       data: {
         ...createListingDto,
         owner: {
@@ -19,25 +19,29 @@ export class ListingsService {
   }
 
   async find(userId: number) {
-    return await this.prisma.listing.findMany({where: {id: userId}});
+    return  this.prisma.listing.findMany({
+      where: {
+        ownerId: userId
+      }
+    })
   }
 
   async findAll() {
-    return await this.prisma.listing.findMany();
+    return this.prisma.listing.findMany();
   }
 
   async findOne(id: number) {
-    return await this.prisma.listing.findFirst({where: {id}});
+    return this.prisma.listing.findFirst({where: {id}});
   }
 
   async update(id: number, updateListingDto: UpdateListingDto) {
-    return await this.prisma.listing.update({
+    return this.prisma.listing.update({
       where: {id},
       data: updateListingDto
     });
   }
 
   async remove(id: number) {
-    return await this.prisma.listing.delete({where: {id}});
+    return this.prisma.listing.delete({where: {id}});
   }
 }

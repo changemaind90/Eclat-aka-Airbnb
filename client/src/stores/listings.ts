@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import api from "@/api";
-import type { Listing } from "@/types";
+import type {Booking, Listing} from "@/types";
 import { useAuthStore } from "@/stores/auth";
 
 export const useListingsStore = defineStore("listings", {
@@ -25,8 +25,9 @@ export const useListingsStore = defineStore("listings", {
          if (!authStore.user?.id || isNaN(authStore.user.id)) {
             throw new Error("User ID не доступен или невалиден");
           }
-        const response = await api.get(`/listings?userId=${authStore.user.id}`);
+        const response = await api.get(`/listings`);
         this.userListings = response.data;
+				return response.data
       } catch (error) {
         console.error("Ошибка загрузки:", error);
         this.error = "Ошибка загрузки объявлений пользователя";

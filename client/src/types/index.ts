@@ -10,7 +10,7 @@ export interface Listing {
   id: number
   title: string
   description: string
-  price: number
+	pricePerNight: number
   address: string
   city: string
   images: string[]

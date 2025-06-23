@@ -10,24 +10,24 @@ import { ApiHeaders, ApiResponse } from "@nestjs/swagger";
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @ApiResponse({example: {accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJzb21lQGdtYWlsLmNvbSIsImlhdCI6MTc0NjMxMDAxMiwiZXhwIjoxNzQ2MzEwOTEyfQ.u6rORAjy3q4wSaCNZ2ZiR5h8BNX1Z8DYOYd7yR_Tk6M"}})
+  @ApiResponse({example: {token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJzb21lQGdtYWlsLmNvbSIsImlhdCI6MTc0NjMxMDAxMiwiZXhwIjoxNzQ2MzEwOTEyfQ.u6rORAjy3q4wSaCNZ2ZiR5h8BNX1Z8DYOYd7yR_Tk6M"}})
   @Post('register')
   async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Response) {
     const tokens = await this.authService.register(dto);
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true
     });
-    res.send({accessToken: tokens.accessToken});
+    res.send({token: tokens.accessToken});
   }
   
-  @ApiResponse({example: {accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJzb21lQGdtYWlsLmNvbSIsImlhdCI6MTc0NjMxMDAxMiwiZXhwIjoxNzQ2MzEwOTEyfQ.u6rORAjy3q4wSaCNZ2ZiR5h8BNX1Z8DYOYd7yR_Tk6M"}})
+  @ApiResponse({example: {token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJzb21lQGdtYWlsLmNvbSIsImlhdCI6MTc0NjMxMDAxMiwiZXhwIjoxNzQ2MzEwOTEyfQ.u6rORAjy3q4wSaCNZ2ZiR5h8BNX1Z8DYOYd7yR_Tk6M"}})
   @Post('login')
   async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
     const tokens = await this.authService.login(dto);
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true
     });
-    res.send({accessToken: tokens.accessToken});
+    res.send({token: tokens.accessToken});
   }
   
   @ApiHeaders([{name: "Bearer", example: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJzb21lQGdtYWlsLmNvbSIsImlhdCI6MTc0NjMxMDAxMiwiZXhwIjoxNzQ2MzEwOTEyfQ.u6rORAjy3q4wSaCNZ2ZiR5h8BNX1Z8DYOYd7yR_Tk6M"}])
@@ -38,7 +38,7 @@ export class AuthController {
     return this.authService.logout(req.user.id);
   }
   
-  @ApiResponse({example: {accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJzb21lQGdtYWlsLmNvbSIsImlhdCI6MTc0NjMxMDAxMiwiZXhwIjoxNzQ2MzEwOTEyfQ.u6rORAjy3q4wSaCNZ2ZiR5h8BNX1Z8DYOYd7yR_Tk6M"}})
+  @ApiResponse({example: {token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJzb21lQGdtYWlsLmNvbSIsImlhdCI6MTc0NjMxMDAxMiwiZXhwIjoxNzQ2MzEwOTEyfQ.u6rORAjy3q4wSaCNZ2ZiR5h8BNX1Z8DYOYd7yR_Tk6M"}})
   @UseGuards(AuthGuard('jwt-refresh'))
   @Post('refresh')
   async refresh(@Request() req, @Res({ passthrough: true }) res: Response) {
@@ -46,7 +46,7 @@ export class AuthController {
     res.cookie("refreshToken", tokens.refreshToken, {
       httpOnly: true
     });
-    res.send({accessToken: tokens.accessToken});
+    res.send({token: tokens.accessToken});
   }
   
   @Get('google')
@@ -55,7 +55,7 @@ export class AuthController {
     // редирект на гугл
   }
   
-  @ApiResponse({example: {accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJzb21lQGdtYWlsLmNvbSIsImlhdCI6MTc0NjMxMDAxMiwiZXhwIjoxNzQ2MzEwOTEyfQ.u6rORAjy3q4wSaCNZ2ZiR5h8BNX1Z8DYOYd7yR_Tk6M"}})
+  @ApiResponse({example: {token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJzb21lQGdtYWlsLmNvbSIsImlhdCI6MTc0NjMxMDAxMiwiZXhwIjoxNzQ2MzEwOTEyfQ.u6rORAjy3q4wSaCNZ2ZiR5h8BNX1Z8DYOYd7yR_Tk6M"}})
   @Get('google/redirect')
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Request() req, @Res({ passthrough: true }) res: Response) {
@@ -63,6 +63,6 @@ export class AuthController {
     res.cookie("refreshToken", tokens.refreshToken, {
         httpOnly: true
     });
-    res.send({accessToken: tokens.accessToken});
+    res.send({token: tokens.accessToken});
   }
 }

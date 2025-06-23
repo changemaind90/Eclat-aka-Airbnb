@@ -34,11 +34,11 @@ export const useAuthStore = defineStore("auth", {
         this.error = null;
         const response = await api.post("/auth/login", credentials);
         console.log("[Авторизация] Ответ:", response.data);
-        if (!response.data?.accessToken) {
+        if (!response.data?.token) {
           throw new Error("Нет токена!");
         }
         const storage = credentials.rememberMe ? localStorage : sessionStorage;
-        storage.setItem("token", response.data.accessToken);
+        storage.setItem("token", response.data.token);
         console.log(
           `[Аторизация] Токен сохранен в: ${
             credentials.rememberMe ? "localStorage" : "sessionStorage"

@@ -47,7 +47,8 @@ const handleSearch = (filters: { query: string; type: string }) => {
 <style scoped>
 .title-header {
   position: relative;
-  width: 100vw;
+  	max-width: 100vw;
+	width: 100%;
   left: 50%;
   transform: translateX(-50%);
   min-height: 400px;

@@ -13,7 +13,7 @@ export class BookingController {
     return this.bookingService.confirmBook(createBookingDto, req.user.id);
   }
   
-  @Post("/cansel/:id")
+  @Post("/cancel/:id")
   canselBook(@Param('id') id: string) {
     return this.bookingService.canselBook(+id);
   }

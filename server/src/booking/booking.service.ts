@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { connect } from 'http2';
@@ -8,11 +8,15 @@ export class BookingService {
   constructor(private readonly prisma: PrismaService) {}
 
   async confirmBook(createBookingDto: CreateBookingDto, userId: number) {
+     const booking_id = await this.prisma.listing.findUnique({where: {id: createBookingDto.listingId}});
+     if(!booking_id) throw new NotFoundException("Booking not found");
+     
+    
     return await this.prisma.booking.create({
       data: {
         startDate: new Date(createBookingDto.startDate),
         endDate: new Date(createBookingDto.endDate),
-        totalPrice: createBookingDto.totalPrice,
+        totalPrice: booking_id.pricePerNight,
         status: "CONFIRMED",
         user: {
           connect: {id: userId}

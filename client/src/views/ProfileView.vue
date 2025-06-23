@@ -6,7 +6,7 @@
       <div v-else-if="error">{{ error }}</div>
       <div class="listings-container">
         <ListingCard
-          v-for="listing in displayedListings"
+          v-for="listing in userListings"
           :key="listing.id"
           :listing="listing"
           :can-book="authStore.isAuthenticated"
@@ -40,6 +40,7 @@ import CreateListingForm from "@/components/CreateListingForm.vue";
 import ListingCard from "@/components/ListingCard.vue";
 import type { Listing } from "@/types";
 
+
 const authStore = useAuthStore();
 const listingsStore = useListingsStore();
 const router = useRouter();
@@ -59,10 +60,11 @@ watch(() => authStore.user?.id, (newId) => {
 }, { immediate: true });
 
 // Объединенные списки для отображения
-const displayedListings = computed(() => [
-  ...bookings.value,
-  ...userListings.value,
-]);
+// const displayedListings = computed(() => [
+//   ...bookings.value,
+//   ...userListings.value,
+// ]);
+
 
 const goToListing = (id: number) => {
   router.push(`/listing/${id}`);
@@ -95,7 +97,7 @@ const handleUpdateSuccess = async () => {
 
 const cancelBooking = async (bookingId: number) => {
   try {
-    await listingsStore.cancelBooking(bookingId.toString());
+    await listingsStore.cancelBooking(bookingId);
     // Обновляем список броней
     await loadData();
   } catch (error: any) {
@@ -114,6 +116,7 @@ const loadData = async () => {
       authStore.user?.id ? Number(authStore.user.id) : undefined
     );
 
+
     if (Array.isArray(bookingsData)) {
       bookings.value = bookingsData;
     }
@@ -121,16 +124,17 @@ const loadData = async () => {
     if (Array.isArray(listingsData)) {
       userListings.value = listingsData;
     }
+
   } catch (e) {
     error.value = "Ошибка загрузки данных";
   } finally {
     loading.value = false;
   }
 };
-
 onMounted(async () => {
   await loadData();
 });
+
 </script>
 
 <style>

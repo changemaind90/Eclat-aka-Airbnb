@@ -13,13 +13,12 @@
 
       <!-- Основные поля -->
       <div class="form-group">
-        <label>Название:</label>
-        <input v-model="formData.title" required type="text" maxlength="100">
+        <input v-model="formData.title" required type="text" maxlength="100" placeholder="Название: ">
       </div>
 
       <div class="form-group">
-        <label>Описание (до 2000 символов):</label>
-        <textarea 
+        <textarea
+			placeholder="Описание (до 2000 символов):"
           v-model="formData.description" 
           required 
           maxlength="2000"
@@ -39,8 +38,7 @@
       </div>
 
       <div class="form-group">
-        <label>Цена за ночь (до 10,000,000 ₽):</label>
-        <input 
+        <input
           v-model.number="formData.pricePerNight" 
           required 
           type="number" 
@@ -51,7 +49,6 @@
       </div>
 
       <div class="form-group">
-        <label>Количество гостей (1-10):</label>
         <input 
           v-model.number="formData.numberOfGuests" 
           required 

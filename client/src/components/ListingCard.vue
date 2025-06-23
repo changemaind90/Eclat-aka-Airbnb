@@ -3,12 +3,11 @@
   <div class="listing-card" @click="$emit('click')">
     <img 
       :src="listing.images?.length ? listing.images[0] : '/default-image.jpg'"
-      @error="handleImageError"
       loading="lazy"
     >
     <div class="listing-details">
       <h3>{{ listing.title }}</h3>
-      <p>{{ listing.price }} ₽</p>
+      <p>{{ listing.pricePerNight }} ₽</p>
     </div>
      <button 
       v-if="canBook && !isBookedByCurrentUser && authStore.isAuthenticated"
@@ -36,7 +35,6 @@ import { computed, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useListingsStore } from '@/stores/listings'
 import type { Listing } from "@/types";
-
 const authStore = useAuthStore()
 const listingsStore = useListingsStore()
 const isBookingInProgress = ref(false)
@@ -52,8 +50,7 @@ const handleBook = async (e: Event) => {
   try {
     await listingsStore.createBooking(props.listing.id, {
       start: new Date().toISOString().split('T')[0],
-      end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-    });
+      end: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],    });
     emit('book'); 
   } catch (error) {
     console.error("Booking error:", error);
@@ -85,9 +82,6 @@ const props = defineProps({
 })
 const emit = defineEmits(['book', 'cancel-booking', 'click', 'edit'])
 
-const handleImageError = (e: Event) => {
-  (e.target as HTMLImageElement).src = '/default-image.jpg'
-}
 </script>
 
 <style scoped>
